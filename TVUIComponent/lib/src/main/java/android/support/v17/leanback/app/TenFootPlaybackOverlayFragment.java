@@ -220,20 +220,10 @@ public class TenFootPlaybackOverlayFragment extends DetailsFragment {
     };
 
     private final VerticalGridView.OnTouchInterceptListener mOnTouchInterceptListener =
-            new VerticalGridView.OnTouchInterceptListener() {
-                public boolean onInterceptTouchEvent(MotionEvent event) {
-
-                    return onInterceptInputEvent(event);
-                }
-            };
+            event -> onInterceptInputEvent(event);
 
     private final VerticalGridView.OnKeyInterceptListener mOnKeyInterceptListener =
-            new VerticalGridView.OnKeyInterceptListener() {
-                public boolean onInterceptKeyEvent(KeyEvent event) {
-
-                    return onInterceptInputEvent(event);
-                }
-            };
+            event -> onInterceptInputEvent(event);
 
     private void setBgAlpha(int alpha) {
 
@@ -523,7 +513,7 @@ public class TenFootPlaybackOverlayFragment extends DetailsFragment {
         }
 
         // We will consume the key event if another is already pressed and held by the user except
-        // when the Button A is pressed
+        // when the Button A is pressEAD
         if (mKeyPressed
                 && mKeyCode != keyCode
                 && keyCode != KeyEvent.KEYCODE_BUTTON_A
@@ -532,7 +522,7 @@ public class TenFootPlaybackOverlayFragment extends DetailsFragment {
         }
 
         // Set the key pressed to true if the action is DOWN and remember which key is pressed
-        if (((KeyEvent) event).getAction() == KeyEvent.ACTION_DOWN) {
+        if ((event instanceof KeyEvent && ((KeyEvent) event).getAction() == KeyEvent.ACTION_DOWN) || keyCode == KeyEvent.ACTION_DOWN) {
             mKeyPressed = true;
             mKeyCode = keyCode;
         }
