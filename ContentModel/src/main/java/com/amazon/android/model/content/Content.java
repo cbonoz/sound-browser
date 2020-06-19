@@ -19,6 +19,7 @@ import com.amazon.utils.ListUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
@@ -968,6 +969,7 @@ public class Content implements Serializable {
                 ", mTitle='" + mTitle + '\'' +
                 ", mSubtitle='" + mSubtitle + '\'' +
                 ", mUrl='" + mUrl + '\'' +
+                ", mPrice='" + mPriceDetail + '\'' +
                 ", mDescription='" + mDescription + '\'' +
                 ", mCardImageUrl='" + mCardImageUrl + '\'' +
                 ", mBackgroundImageUrl='" + mBackgroundImageUrl + '\'' +
@@ -1037,4 +1039,23 @@ public class Content implements Serializable {
     public void setPrice(Integer mPrice) {
         this.mPriceDetail = mPrice;
     }
+
+    public String toPurchaseString(Context context, String cardType, String lastFourDigits) {
+        final String price;
+        if (getPrice() != null) {
+            price = String.format("Price: %s", context.getResources().getString(getPrice()));
+        } else {
+            price = "N/A";
+        }
+
+        return String.format(Locale.US,
+        "Item: %s\n%s\nQuantity: %s\n\nPayment Method:\n%s **%s",
+                getTitle(),
+                price,
+                1,
+                cardType,
+                lastFourDigits
+            );
+    }
+
 }

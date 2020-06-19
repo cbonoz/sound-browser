@@ -141,6 +141,10 @@ public class ContentDetailsFragment extends android.support.v17.leanback.app.Det
         mShowRelatedContent = ContentBrowser.getInstance(getActivity()).isShowRelatedContent();
     }
 
+    public Content getSelectedContent() {
+        return mSelectedContent;
+    }
+
     @Override
     public void onStart() {
 

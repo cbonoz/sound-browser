@@ -29,6 +29,7 @@
 package com.amazon.android.tv.tenfoot.ui.activities;
 
 import com.amazon.android.contentbrowser.ContentBrowser;
+import com.amazon.android.model.content.Content;
 import com.amazon.android.model.event.ActionUpdateEvent;
 import com.amazon.android.tv.tenfoot.R;
 import com.amazon.android.tv.tenfoot.base.BaseActivity;
@@ -40,6 +41,9 @@ import com.amazon.utils.DateAndTimeHelper;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -113,16 +117,23 @@ public class ContentDetailsActivity extends BaseActivity {
                 CardDetails cardResult = result.getSuccessValue();
                 Card card = cardResult.getCard();
                 String nonce = cardResult.getNonce();
-                Toast.makeText(this,
-                        "Item purchased!",
-                        Toast.LENGTH_SHORT)
-                        .show();
+                final Content selectedContent = mContentDetailsFragment.getSelectedContent();
+                if (selectedContent != null) {
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(this)
+                            .setTitle("Purchase complete")
+                            .setMessage(selectedContent.toPurchaseString(this, card.getBrand().toString(), card.getLastFourDigits()))
+                            .setPositiveButton(R.string.ok, (dialogInterface, i) -> dialogInterface.dismiss());
+                    final Dialog dialog = builder.show();
+                }
+
             } else if (result.isCanceled()) {
                 Toast.makeText(this,
-                        "Canceled",
-                        Toast.LENGTH_SHORT)
+                        "Purchase canceled",
+                        Toast.LENGTH_LONG)
                         .show();
             }
+
+
         });
     }
 }
