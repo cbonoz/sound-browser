@@ -1,12 +1,12 @@
 /**
  * Copyright 2015-2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * A copy of the License is located at
- *
- *     http://aws.amazon.com/apache2.0/
- *
+ * <p>
+ * http://aws.amazon.com/apache2.0/
+ * <p>
  * or in the "license" file accompanying this file. This file is distributed
  * on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
  * express or implied. See the License for the specific language governing
@@ -47,6 +47,7 @@ import com.amazon.android.utils.LeanbackHelpers;
 import com.amazon.android.utils.Preferences;
 import com.amazon.utils.DateAndTimeHelper;
 import com.amazon.utils.StringManipulation;
+import com.squareup.haha.guava.collect.ImmutableMap;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -59,10 +60,13 @@ import android.os.Bundle;
 import android.support.v17.leanback.widget.SparseArrayObjectAdapter;
 import android.util.Log;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Stack;
 
@@ -378,6 +382,19 @@ public class ContentBrowser implements IContentBrowser, ICancellableLoad {
      */
     private LauncherIntegrationManager mLauncherIntegrationManager;
 
+    private static final Map<String, Integer> PRICE_MAP = createMap();
+
+    private static Map<String, Integer> createMap() {
+        Map<String, Integer> result = new HashMap<>();
+        result.put("2001", R.string.buy_1);
+        result.put("2002", R.string.buy_2);
+        result.put("2003", R.string.buy_3);
+        result.put("2004", R.string.buy_4);
+        result.put("2005", R.string.buy_5);
+        result.put("2006", R.string.buy_6);
+        return Collections.unmodifiableMap(result);
+    }
+
     /**
      * Flag for whether or not the user is subscribed.
      */
@@ -422,7 +439,7 @@ public class ContentBrowser implements IContentBrowser, ICancellableLoad {
      * Recommendation manager instance.
      */
     private RecommendationManager mRecommendationManager;
-    
+
     /**
      * Returns AuthHelper instance.
      *
@@ -465,7 +482,7 @@ public class ContentBrowser implements IContentBrowser, ICancellableLoad {
     public List<Content> getWatchlistContent() {
 
         List<Content> contentList = new ArrayList<>();
-        
+
         WatchlistDatabaseHelper databaseHelper = WatchlistDatabaseHelper.getInstance();
         if (databaseHelper != null) {
 
@@ -475,7 +492,7 @@ public class ContentBrowser implements IContentBrowser, ICancellableLoad {
             for (String contentId : contendIds) {
 
                 Content content = mContentLoader.getRootContentContainer()
-                                                .findContentById(contentId);
+                        .findContentById(contentId);
                 if (content != null) {
                     contentList.add(content);
                 }
@@ -586,14 +603,14 @@ public class ContentBrowser implements IContentBrowser, ICancellableLoad {
 
         mOverrideAllContentsSubscriptionFlag =
                 mAppContext.getResources()
-                           .getBoolean(R.bool.override_all_contents_subscription_flag);
+                        .getBoolean(R.bool.override_all_contents_subscription_flag);
 
         addWidgetsAction(createSearchAction());
         //addWidgetsAction(createSlideShowAction());
         addSettingsAction(createTermsOfUseSettingsAction());
         //addSettingsAction(createSlideShowSettingAction());
         setupLogoutAction();
-        
+
         mSearchManager.addSearchAlgo(DEFAULT_SEARCH_ALGO_NAME, new ISearchAlgo<Content>() {
             @Override
             public boolean onCompare(String query, Content content) {
@@ -637,13 +654,11 @@ public class ContentBrowser implements IContentBrowser, ICancellableLoad {
                         Log.d(TAG, "Are modules loaded? " + mModulesLoaded);
                         if (!mModulesLoaded) {
                             initFromImmatureApp(activity);
-                        }
-                        else {
+                        } else {
                             reloadFeed(activity);
                         }
 
-                    }
-                    else if (activity != null &&
+                    } else if (activity != null &&
                             activity.getIntent().hasExtra(REQUEST_FROM_LAUNCHER) &&
                             activity.getIntent().getBooleanExtra(REQUEST_FROM_LAUNCHER, false)) {
 
@@ -655,8 +670,7 @@ public class ContentBrowser implements IContentBrowser, ICancellableLoad {
                         activity.getIntent().putExtra(RESTORE_ACTIVITY, false);
                         restoreActivityState(screenName);
                     }
-                }
-                else if (screenName.equals(CONTENT_SPLASH_SCREEN)) {
+                } else if (screenName.equals(CONTENT_SPLASH_SCREEN)) {
                     Log.d(TAG, "runGlobalRecipes due to CONTENT_SPLASH_SCREEN focus");
                 }
             }
@@ -680,8 +694,7 @@ public class ContentBrowser implements IContentBrowser, ICancellableLoad {
                     // CompositeSubscription is a single use, create a new one for next round.
                     mCompositeSubscription = null;
                     mCompositeSubscription = new CompositeSubscription();
-                }
-                else {
+                } else {
                     Log.d(TAG, "onApplicationGoesToBackground has no subscriptions!!!");
                 }
             }
@@ -697,7 +710,7 @@ public class ContentBrowser implements IContentBrowser, ICancellableLoad {
     private void restoreActivityState(String screenName) {
 
         String lastActivity = Preferences.getString(com.amazon.android.ui.constants
-                                                            .PreferencesConstants.LAST_ACTIVITY);
+                .PreferencesConstants.LAST_ACTIVITY);
         String lastContent = Preferences.getString(PreferencesConstants.CONTENT_ID);
 
         Content content = mContentLoader.getRootContentContainer().findContentById(lastContent);
@@ -722,8 +735,8 @@ public class ContentBrowser implements IContentBrowser, ICancellableLoad {
 
         if (mLoginAction != null) {
             mLoginAction.setState(authenticationStatusUpdateEvent.isUserAuthenticated() ?
-                                          LogoutSettingsFragment.TYPE_LOGOUT :
-                                          LogoutSettingsFragment.TYPE_LOGIN);
+                    LogoutSettingsFragment.TYPE_LOGOUT :
+                    LogoutSettingsFragment.TYPE_LOGIN);
         }
 
     }
@@ -758,7 +771,7 @@ public class ContentBrowser implements IContentBrowser, ICancellableLoad {
         // This handles the case of resuming app launch after home button press from
         // second-screen auth activity.
         mAuthHelper.handleOnActivityResult(AuthHelper.AUTH_ON_ACTIVITY_RESULT_REQUEST_CODE, 0,
-                                           null);
+                null);
 
         mPurchaseHelper = new PurchaseHelper(mAppContext, this);
         // Launcher integration requires the content authorization system initialized before this
@@ -772,7 +785,7 @@ public class ContentBrowser implements IContentBrowser, ICancellableLoad {
         mRecommendationManager = new RecommendationManager(mAppContext);
         // First reading of the database upon app launch. Created off of main thread.
         mRecommendationManager.cleanDatabase();
-        
+
         // The app successfully loaded its modules so clear out the crash number.
         Preferences.setLong(ModularApplication.APP_CRASHES_KEY, 0);
 
@@ -1053,7 +1066,7 @@ public class ContentBrowser implements IContentBrowser, ICancellableLoad {
     private Action createTermsOfUseSettingsAction() {
         // Create the Terms of Use settings action.
         return new Action().setAction(TERMS).setIconResourceId(R.drawable.ic_terms_text)
-                           .setLabel1(mAppContext.getString(R.string.terms_title));
+                .setLabel1(mAppContext.getString(R.string.terms_title));
     }
 
     /**
@@ -1064,16 +1077,16 @@ public class ContentBrowser implements IContentBrowser, ICancellableLoad {
     private Action createLogoutButtonSettingsAction() {
         // Create the logout button settings action.
         return new Action().setAction(LOGIN_LOGOUT)
-                           .setId(ContentBrowser.CONTENT_ACTION_LOGIN_LOGOUT)
-                           .setLabel1(LogoutSettingsFragment.TYPE_LOGOUT,
-                                      mAppContext.getString(R.string.logout_label))
-                           .setIconResourceId(LogoutSettingsFragment.TYPE_LOGOUT, R
-                                   .drawable.ic_login_logout)
-                           .setLabel1(LogoutSettingsFragment.TYPE_LOGIN,
-                                      mAppContext.getString(R.string.login_label))
-                           .setIconResourceId(LogoutSettingsFragment.TYPE_LOGIN, R
-                                   .drawable.ic_login_logout)
-                           .setState(LogoutSettingsFragment.TYPE_LOGIN);
+                .setId(ContentBrowser.CONTENT_ACTION_LOGIN_LOGOUT)
+                .setLabel1(LogoutSettingsFragment.TYPE_LOGOUT,
+                        mAppContext.getString(R.string.logout_label))
+                .setIconResourceId(LogoutSettingsFragment.TYPE_LOGOUT, R
+                        .drawable.ic_login_logout)
+                .setLabel1(LogoutSettingsFragment.TYPE_LOGIN,
+                        mAppContext.getString(R.string.login_label))
+                .setIconResourceId(LogoutSettingsFragment.TYPE_LOGIN, R
+                        .drawable.ic_login_logout)
+                .setState(LogoutSettingsFragment.TYPE_LOGIN);
     }
 
     /**
@@ -1121,8 +1134,8 @@ public class ContentBrowser implements IContentBrowser, ICancellableLoad {
     private Action createSlideShowSettingAction() {
 
         return new Action().setAction(SLIDESHOW_SETTING)
-                           .setLabel1(mAppContext.getString(R.string.slideshow_title))
-                           .setIconResourceId(R.drawable.ic_terms_text);
+                .setLabel1(mAppContext.getString(R.string.slideshow_title))
+                .setIconResourceId(R.drawable.ic_terms_text);
     }
 
     /**
@@ -1151,7 +1164,7 @@ public class ContentBrowser implements IContentBrowser, ICancellableLoad {
 
         for (Content c : mContentLoader.getRootContentContainer()) {
             if (content.hasSimilarTags(c) && !StringManipulation.areStringsEqual(c.getId(),
-                                                                                 content.getId())) {
+                    content.getId())) {
                 recommendedContentContainer.addContent(c);
             }
         }
@@ -1167,13 +1180,12 @@ public class ContentBrowser implements IContentBrowser, ICancellableLoad {
 
                 for (Content relatedContent : parentContainer.getContents()) {
                     if (!StringManipulation.areStringsEqual(content.getId(),
-                                                            relatedContent.getId())) {
+                            relatedContent.getId())) {
                         recommendedContentContainer.addContent(relatedContent);
                     }
                 }
 
-            }
-            else {
+            } else {
                 Log.w(TAG, "The content's container could not be found! " + content.toString());
             }
         }
@@ -1226,12 +1238,11 @@ public class ContentBrowser implements IContentBrowser, ICancellableLoad {
 
         if (mICustomSearchHandler != null) {
             mICustomSearchHandler.onSearchRequested(query, iSearchResult);
-        }
-        else {
+        } else {
             mSearchManager.syncSearch(DEFAULT_SEARCH_ALGO_NAME,
-                                      query,
-                                      iSearchResult,
-                                      mContentLoader.getRootContentContainer());
+                    query,
+                    iSearchResult,
+                    mContentLoader.getRootContentContainer());
         }
     }
 
@@ -1252,8 +1263,8 @@ public class ContentBrowser implements IContentBrowser, ICancellableLoad {
             case TERMS:
                 new NoticeSettingsFragment()
                         .createFragment(activity,
-                                        activity.getFragmentManager(),
-                                        settingsAction);
+                                activity.getFragmentManager(),
+                                settingsAction);
                 break;
             case SLIDESHOW_SETTING:
                 slideShowSettingActionTriggered(activity, settingsAction);
@@ -1273,8 +1284,8 @@ public class ContentBrowser implements IContentBrowser, ICancellableLoad {
     private void slideShowSettingActionTriggered(Activity activity, Action settingsAction) {
 
         new SlideShowSettingFragment().createFragment(activity,
-                                                      activity.getFragmentManager(),
-                                                      settingsAction);
+                activity.getFragmentManager(),
+                settingsAction);
     }
 
     /**
@@ -1292,10 +1303,9 @@ public class ContentBrowser implements IContentBrowser, ICancellableLoad {
                         settingsAction.setState(LogoutSettingsFragment.TYPE_LOGOUT);
                         new LogoutSettingsFragment()
                                 .createFragment(activity,
-                                                activity.getFragmentManager(),
-                                                settingsAction);
-                    }
-                    else {
+                                        activity.getFragmentManager(),
+                                        settingsAction);
+                    } else {
                         settingsAction.setState(LogoutSettingsFragment.TYPE_LOGIN);
                         mAuthHelper.authenticateWithActivity().subscribe(resultBundle -> {
                             if (resultBundle != null &&
@@ -1308,6 +1318,7 @@ public class ContentBrowser implements IContentBrowser, ICancellableLoad {
                 });
     }
 
+
     /**
      * Get content action list.
      *
@@ -1317,6 +1328,7 @@ public class ContentBrowser implements IContentBrowser, ICancellableLoad {
     public List<Action> getContentActionList(Content content) {
 
         List<Action> contentActionList = new ArrayList<>();
+
 
         boolean isSubscriptionNotRequired = !content.isSubscriptionRequired();
         if (isSubscriptionNotRequired && mOverrideAllContentsSubscriptionFlag) {
@@ -1332,30 +1344,15 @@ public class ContentBrowser implements IContentBrowser, ICancellableLoad {
         // 5001-5004
         // 4991-4995
 
-        if (content.getId().equals("2001")) {
-            contentActionList.add(createActionButton(CONTENT_ACTION_BUY,
-                    R.string.buy_0,
-                    R.string.buy_1));
-        } else if (content.getId().equals("2002")) {
-            contentActionList.add(createActionButton(CONTENT_ACTION_BUY,
-                    R.string.buy_0,
-                    R.string.buy_2));
-        } else if (content.getId().equals("2003")) {
-            contentActionList.add(createActionButton(CONTENT_ACTION_BUY,
-                    R.string.buy_0,
-                    R.string.buy_3));
-        } else if (content.getId().equals("2004")) {
-            contentActionList.add(createActionButton(CONTENT_ACTION_BUY,
-                    R.string.buy_0,
-                    R.string.buy_4));
-        } else if (content.getId().equals("2005")) {
-            contentActionList.add(createActionButton(CONTENT_ACTION_BUY,
-                    R.string.buy_0,
-                    R.string.buy_5));
-        } else if (content.getId().equals("2006")) {
-            contentActionList.add(createActionButton(CONTENT_ACTION_BUY,
-                    R.string.buy_0,
-                    R.string.buy_6));
+        if (PRICE_MAP.containsKey(content.getId())) {
+            Integer priceResourceId = PRICE_MAP.get(content.getId());
+            if (priceResourceId != null) {
+                contentActionList.add(createActionButton(CONTENT_ACTION_BUY,
+                        R.string.buy_0,
+                        priceResourceId
+                ));
+                content.setPrice(priceResourceId);
+            }
         } else if (mSubscribed || isSubscriptionNotRequired || mIAPDisabled) {
 
             // Check if the content is meant for live watching. Live content requires only a
@@ -1370,37 +1367,35 @@ public class ContentBrowser implements IContentBrowser, ICancellableLoad {
                 // Add "Resume" button if content playback is not complete.
                 if (record != null && !record.isPlaybackComplete()) {
                     contentActionList.add(createActionButton(CONTENT_ACTION_RESUME,
-                                                             R.string.resume_1,
-                                                             R.string.resume_2));
+                            R.string.resume_1,
+                            R.string.resume_2));
                     // Add "Watch From Beginning" button to start content over.
                     contentActionList.add(createActionButton(CONTENT_ACTION_WATCH_FROM_BEGINNING,
-                                                             R.string.watch_from_beginning_1,
-                                                             R.string.watch_from_beginning_2));
+                            R.string.watch_from_beginning_1,
+                            R.string.watch_from_beginning_2));
                 }
                 // If the content has not been played yet, add the "Watch Now" button.
                 else {
                     contentActionList.add(createActionButton(CONTENT_ACTION_WATCH_NOW,
-                                                             R.string.watch_now_1,
-                                                             R.string.watch_now_2));
+                            R.string.watch_now_1,
+                            R.string.watch_now_2));
                 }
                 if (isWatchlistRowEnabled()) {
                     addWatchlistAction(contentActionList, content.getId());
                 }
-            }
-            else {
+            } else {
                 contentActionList.add(createActionButton(CONTENT_ACTION_WATCH_NOW,
-                                                         R.string.watch_now_1,
-                                                         R.string.watch_now_2));
+                        R.string.watch_now_1,
+                        R.string.watch_now_2));
             }
-        }
-        else {
+        } else {
             contentActionList.add(createActionButton(CONTENT_ACTION_SUBSCRIPTION,
-                                                     R.string.premium_1,
-                                                     R.string.premium_2));
+                    R.string.premium_1,
+                    R.string.premium_2));
 
             contentActionList.add(createActionButton(CONTENT_ACTION_DAILY_PASS,
-                                                     R.string.daily_pass_1,
-                                                     R.string.daily_pass_2));
+                    R.string.daily_pass_1,
+                    R.string.daily_pass_2));
         }
 
         contentActionList.addAll(mGlobalContentActionList);
@@ -1419,8 +1414,8 @@ public class ContentBrowser implements IContentBrowser, ICancellableLoad {
     private Action createActionButton(int contentActionId, int stringId1, int stringId2) {
 
         return new Action().setId(contentActionId)
-                           .setLabel1(mAppContext.getResources().getString(stringId1))
-                           .setLabel2(mAppContext.getResources().getString(stringId2));
+                .setLabel1(mAppContext.getResources().getString(stringId1))
+                .setLabel2(mAppContext.getResources().getString(stringId2));
     }
 
     /**
@@ -1435,14 +1430,14 @@ public class ContentBrowser implements IContentBrowser, ICancellableLoad {
         // If the content is already in the watchlist, add a remove button.
         if (isContentInWatchlist(id)) {
             contentActionList.add(createActionButton(CONTENT_ACTION_REMOVE_WATCHLIST,
-                                                     R.string.watchlist_2,
-                                                     R.string.watchlist_3));
+                    R.string.watchlist_2,
+                    R.string.watchlist_3));
         }
         // Add the add to watchlist button.
         else {
             contentActionList.add(createActionButton(CONTENT_ACTION_ADD_WATCHLIST,
-                                                     R.string.watchlist_1,
-                                                     R.string.watchlist_3));
+                    R.string.watchlist_1,
+                    R.string.watchlist_3));
         }
     }
 
@@ -1453,7 +1448,7 @@ public class ContentBrowser implements IContentBrowser, ICancellableLoad {
      * @return True if the watchlist contains the content; false otherwise.
      */
     private boolean isContentInWatchlist(String id) {
-        
+
         WatchlistDatabaseHelper databaseHelper = WatchlistDatabaseHelper.getInstance();
         if (databaseHelper != null) {
             return databaseHelper.recordExists(mAppContext, id);
@@ -1472,18 +1467,16 @@ public class ContentBrowser implements IContentBrowser, ICancellableLoad {
      */
     private void watchlistButtonClicked(String contentId, boolean addContent,
                                         SparseArrayObjectAdapter actionAdapter) {
-    
+
         WatchlistDatabaseHelper databaseHelper = WatchlistDatabaseHelper.getInstance();
-    
+
         if (databaseHelper != null) {
             if (addContent) {
                 databaseHelper.addRecord(mAppContext, contentId);
-            }
-            else {
+            } else {
                 databaseHelper.deleteRecord(mAppContext, contentId);
             }
-        }
-        else {
+        } else {
             Log.e(TAG, "Unable to perform watchlist button action because database is null");
         }
         toggleWatchlistButton(addContent, actionAdapter);
@@ -1553,8 +1546,7 @@ public class ContentBrowser implements IContentBrowser, ICancellableLoad {
             if (databaseHelper.recordExists(mAppContext, content.getId())) {
                 record = databaseHelper.getRecord(mAppContext, content.getId());
             }
-        }
-        else {
+        } else {
             Log.e(TAG, "Unable to load content because database is null");
         }
 
@@ -1577,7 +1569,7 @@ public class ContentBrowser implements IContentBrowser, ICancellableLoad {
 
             for (RecentRecord record : records) {
                 Content content = mContentLoader.getRootContentContainer()
-                                                .findContentById(record.getContentId());
+                        .findContentById(record.getContentId());
                 if (content != null) {
                     contentList.add(content);
                 }
@@ -1671,7 +1663,7 @@ public class ContentBrowser implements IContentBrowser, ICancellableLoad {
                                    IScreenSwitchErrorHandler iScreenSwitchErrorHandler) {
 
         verifyScreenSwitch(screenName, (Content) null, iScreenSwitchListener,
-                           iScreenSwitchErrorHandler);
+                iScreenSwitchErrorHandler);
     }
 
     /**
@@ -1701,28 +1693,24 @@ public class ContentBrowser implements IContentBrowser, ICancellableLoad {
 
             if (!mAuthHelper.getIAuthentication().isAuthenticationCanBeDoneLater()) {
                 mAuthHelper.handleAuthChain(iScreenSwitchListener::onScreenSwitch);
-            }
-            else {
+            } else {
                 boolean loginLater = Preferences.getBoolean(AuthHelper.LOGIN_LATER_PREFERENCES_KEY);
                 if (!loginLater && mAuthHelper.getIAuthentication()
-                                              .isAuthenticationCanBeDoneLater()) {
+                        .isAuthenticationCanBeDoneLater()) {
 
                     mAuthHelper.isAuthenticated().subscribe(extras -> {
                         if (extras.getBoolean(AuthHelper.RESULT)) {
                             mAuthHelper.handleAuthChain(
                                     iScreenSwitchListener::onScreenSwitch, extras);
-                        }
-                        else {
+                        } else {
                             iScreenSwitchErrorHandler.onErrorHandler(iScreenSwitchListener);
                         }
                     });
-                }
-                else {
+                } else {
                     iScreenSwitchListener.onScreenSwitch(null);
                 }
             }
-        }
-        else {
+        } else {
             iScreenSwitchListener.onScreenSwitch(null);
         }
     }
@@ -1747,8 +1735,8 @@ public class ContentBrowser implements IContentBrowser, ICancellableLoad {
             activitySwitchListener) {
 
         verifyScreenSwitch(screenName, extra ->
-                                   mNavigator.startActivity(screenName, activitySwitchListener),
-                           errorExtra -> showAuthenticationErrorDialog(errorExtra)
+                        mNavigator.startActivity(screenName, activitySwitchListener),
+                errorExtra -> showAuthenticationErrorDialog(errorExtra)
         );
     }
 
@@ -1761,8 +1749,8 @@ public class ContentBrowser implements IContentBrowser, ICancellableLoad {
     public void switchToScreen(String screenName, Bundle bundle) {
 
         verifyScreenSwitch(screenName, extra ->
-                                   mNavigator.startActivity(screenName, bundle),
-                           errorExtra -> showAuthenticationErrorDialog(errorExtra)
+                        mNavigator.startActivity(screenName, bundle),
+                errorExtra -> showAuthenticationErrorDialog(errorExtra)
         );
     }
 
@@ -1776,8 +1764,8 @@ public class ContentBrowser implements IContentBrowser, ICancellableLoad {
     public void switchToScreen(String screenName, Content content, Bundle bundle) {
 
         verifyScreenSwitch(screenName, content, extra ->
-                                   mNavigator.startActivity(screenName, bundle),
-                           errorExtra -> showAuthenticationErrorDialog(errorExtra)
+                        mNavigator.startActivity(screenName, bundle),
+                errorExtra -> showAuthenticationErrorDialog(errorExtra)
         );
     }
 
@@ -1803,8 +1791,8 @@ public class ContentBrowser implements IContentBrowser, ICancellableLoad {
             activitySwitchListener) {
 
         verifyScreenSwitch(screenName, content, extra ->
-                                   mNavigator.startActivity(screenName, activitySwitchListener),
-                           errorExtra -> showAuthenticationErrorDialog(errorExtra)
+                        mNavigator.startActivity(screenName, activitySwitchListener),
+                errorExtra -> showAuthenticationErrorDialog(errorExtra)
         );
     }
 
@@ -1866,8 +1854,8 @@ public class ContentBrowser implements IContentBrowser, ICancellableLoad {
                     return;
                 }
                 databaseHelper.addRecord(mAppContext, content.getId(), 0, false,
-                                         DateAndTimeHelper.getCurrentDate().getTime(),
-                                         content.getDuration());
+                        DateAndTimeHelper.getCurrentDate().getTime(),
+                        content.getDuration());
             }
         });
     }
@@ -1897,8 +1885,7 @@ public class ContentBrowser implements IContentBrowser, ICancellableLoad {
 
         if (mIAPDisabled) {
             switchToRendererScreen(content, actionId);
-        }
-        else {
+        } else {
             Log.d(TAG, "validating purchase while handleRendererScreenSwitch");
             mPurchaseHelper
                     .isSubscriptionValidObservable()
@@ -1907,8 +1894,7 @@ public class ContentBrowser implements IContentBrowser, ICancellableLoad {
                                 resultBundle.getBoolean(PurchaseHelper.RESULT_VALIDITY)) {
                             // Switch to renderer screen.
                             switchToRendererScreen(content, actionId);
-                        }
-                        else if (resultBundle.getBoolean(PurchaseHelper.RESULT) &&
+                        } else if (resultBundle.getBoolean(PurchaseHelper.RESULT) &&
                                 !resultBundle.getBoolean(PurchaseHelper.RESULT_VALIDITY)) {
 
                             if (showErrorDialog) {
@@ -1933,17 +1919,15 @@ public class ContentBrowser implements IContentBrowser, ICancellableLoad {
                                                 alertDialogFragment.dismiss();
                                             }
                                         });
-                            }
-                            else {
+                            } else {
                                 Log.e(TAG, "Purchase expired while handleRendererScreenSwitch");
                                 ContentBrowser.getInstance(activity).setLastSelectedContent(content)
-                                              .switchToScreen(ContentBrowser
-                                                                      .CONTENT_DETAILS_SCREEN,
-                                                              content);
+                                        .switchToScreen(ContentBrowser
+                                                        .CONTENT_DETAILS_SCREEN,
+                                                content);
                             }
                             updateContentActions();
-                        }
-                        else {
+                        } else {
                             // IAP errors are handled by IAP sdk.
                             Log.e(TAG, "IAP error!!!");
                         }
@@ -2014,7 +1998,7 @@ public class ContentBrowser implements IContentBrowser, ICancellableLoad {
 
         for (int i = 0; i < actionAdapter.size(); i++) {
             Action action = LeanbackHelpers.translateActionAdapterObjectToAction(actionAdapter
-                                                                                         .get(i));
+                    .get(i));
             if (action.getId() == CONTENT_ACTION_ADD_WATCHLIST ||
                     action.getId() == CONTENT_ACTION_REMOVE_WATCHLIST) {
 
@@ -2022,8 +2006,7 @@ public class ContentBrowser implements IContentBrowser, ICancellableLoad {
                 if (addToList) {
                     action.setLabel1(mAppContext.getResources().getString(R.string.watchlist_2));
                     action.setId(CONTENT_ACTION_REMOVE_WATCHLIST);
-                }
-                else {
+                } else {
                     action.setLabel1(mAppContext.getResources().getString(R.string.watchlist_1));
                     action.setId(CONTENT_ACTION_ADD_WATCHLIST);
                 }
@@ -2044,149 +2027,146 @@ public class ContentBrowser implements IContentBrowser, ICancellableLoad {
         final ContentContainer root = new ContentContainer("Root");
         Subscription subscription =
                 Observable.range(0, mNavigator.getNavigatorModel().getGlobalRecipes().size())
-                          // Do this first to make sure were running in new thread right a way.
-                          .subscribeOn(Schedulers.newThread())
-                          .concatMap(index -> mContentLoader.runGlobalRecipeAtIndex(index, root))
-                          .onBackpressureBuffer() // This must be right after concatMap.
-                          .doOnNext(o -> {
-                              if (DEBUG_RECIPE_CHAIN) {
-                                  Log.d(TAG, "doOnNext");
-                              }
-                          })
-                          // This should be last so the rest is running on a separate thread.
-                          .observeOn(AndroidSchedulers.mainThread())
-                          .subscribe(objectPair -> {
-                              if (DEBUG_RECIPE_CHAIN) {
-                                  Log.d(TAG, "subscriber onNext called");
-                              }
-                          }, throwable -> {
-                              Log.e(TAG, "Recipe chain failed:", throwable);
-                              ErrorHelper.injectErrorFragment(
-                                      mNavigator.getActiveActivity(),
-                                      ErrorUtils.ERROR_CATEGORY.FEED_ERROR,
-                                      (errorDialogFragment, errorButtonType,
-                                       errorCategory) -> {
-                                          if (errorButtonType ==
-                                                  ErrorUtils.ERROR_BUTTON_TYPE.EXIT_APP) {
-                                              mNavigator.getActiveActivity().finishAffinity();
-                                          }
-                                      });
+                        // Do this first to make sure were running in new thread right a way.
+                        .subscribeOn(Schedulers.newThread())
+                        .concatMap(index -> mContentLoader.runGlobalRecipeAtIndex(index, root))
+                        .onBackpressureBuffer() // This must be right after concatMap.
+                        .doOnNext(o -> {
+                            if (DEBUG_RECIPE_CHAIN) {
+                                Log.d(TAG, "doOnNext");
+                            }
+                        })
+                        // This should be last so the rest is running on a separate thread.
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(objectPair -> {
+                            if (DEBUG_RECIPE_CHAIN) {
+                                Log.d(TAG, "subscriber onNext called");
+                            }
+                        }, throwable -> {
+                            Log.e(TAG, "Recipe chain failed:", throwable);
+                            ErrorHelper.injectErrorFragment(
+                                    mNavigator.getActiveActivity(),
+                                    ErrorUtils.ERROR_CATEGORY.FEED_ERROR,
+                                    (errorDialogFragment, errorButtonType,
+                                     errorCategory) -> {
+                                        if (errorButtonType ==
+                                                ErrorUtils.ERROR_BUTTON_TYPE.EXIT_APP) {
+                                            mNavigator.getActiveActivity().finishAffinity();
+                                        }
+                                    });
 
-                          }, () -> {
+                        }, () -> {
 
-                              Log.v(TAG, "Recipe chain completed");
-                              // Remove empty sub containers.
-                              root.removeEmptySubContainers();
+                            Log.v(TAG, "Recipe chain completed");
+                            // Remove empty sub containers.
+                            root.removeEmptySubContainers();
 
-                              mContentLoader.setRootContentContainer(root);
-                              if (mIRootContentContainerListener != null) {
-                                  mIRootContentContainerListener.onRootContentContainerPopulated
-                                          (mContentLoader.getRootContentContainer());
-                              }
-                              mContentLoader.setContentReloadRequired(false);
-                              mContentLoader.setContentLoaded(true);
-                              if (cancellable != null && cancellable.isLoadingCancelled()) {
-                                  Log.d(TAG, "Content load complete but app has been cancelled, " +
-                                          "returning from here");
-                                  return;
-                              }
-                              if (mLauncherIntegrationManager != null && activity != null &&
-                                      LauncherIntegrationManager
-                                              .isCallFromLauncher(activity.getIntent())) {
+                            mContentLoader.setRootContentContainer(root);
+                            if (mIRootContentContainerListener != null) {
+                                mIRootContentContainerListener.onRootContentContainerPopulated
+                                        (mContentLoader.getRootContentContainer());
+                            }
+                            mContentLoader.setContentReloadRequired(false);
+                            mContentLoader.setContentLoaded(true);
+                            if (cancellable != null && cancellable.isLoadingCancelled()) {
+                                Log.d(TAG, "Content load complete but app has been cancelled, " +
+                                        "returning from here");
+                                return;
+                            }
+                            if (mLauncherIntegrationManager != null && activity != null &&
+                                    LauncherIntegrationManager
+                                            .isCallFromLauncher(activity.getIntent())) {
 
-                                  Log.d(TAG, "Call from launcher with intent " +
-                                          activity.getIntent());
-                                  String contentId = null;
-                                  try {
+                                Log.d(TAG, "Call from launcher with intent " +
+                                        activity.getIntent());
+                                String contentId = null;
+                                try {
 
-                                      contentId = LauncherIntegrationManager
-                                              .getContentIdToPlay(mAppContext,
-                                                                  activity.getIntent());
+                                    contentId = LauncherIntegrationManager
+                                            .getContentIdToPlay(mAppContext,
+                                                    activity.getIntent());
 
-                                      Content content =
-                                              getRootContentContainer().findContentById(contentId);
-                                      if (content == null) {
-                                          mRecommendationManager.dismissRecommendation(contentId);
-                                          throw new IllegalArgumentException("No content exist " +
-                                                                                     "for " +
-                                                                                     "contentId "
-                                                                                     + contentId);
-                                      }
-                                      AnalyticsHelper.trackLauncherRequest(contentId, content,
-                                                                           getSourceOfContentPlayRequest(activity.getIntent()));
-                                      Intent intent = new Intent();
-                                      intent.putExtra(Content.class.getSimpleName(), content);
-                                      intent.putExtra(REQUEST_FROM_LAUNCHER, true);
-                                      intent.putExtra(PreferencesConstants.CONTENT_ID,
-                                                      content.getId());
-                                      switchToHomeScreen(intent);
+                                    Content content =
+                                            getRootContentContainer().findContentById(contentId);
+                                    if (content == null) {
+                                        mRecommendationManager.dismissRecommendation(contentId);
+                                        throw new IllegalArgumentException("No content exist " +
+                                                "for " +
+                                                "contentId "
+                                                + contentId);
+                                    }
+                                    AnalyticsHelper.trackLauncherRequest(contentId, content,
+                                            getSourceOfContentPlayRequest(activity.getIntent()));
+                                    Intent intent = new Intent();
+                                    intent.putExtra(Content.class.getSimpleName(), content);
+                                    intent.putExtra(REQUEST_FROM_LAUNCHER, true);
+                                    intent.putExtra(PreferencesConstants.CONTENT_ID,
+                                            content.getId());
+                                    switchToHomeScreen(intent);
 
-                                  }
-                                  catch (Exception e) {
-                                      Log.e(TAG, e.getLocalizedMessage(), e);
-                                      AnalyticsHelper.trackLauncherRequest(contentId, null,
-                                                                           getSourceOfContentPlayRequest(activity.getIntent()));
-                                      AlertDialogFragment.createAndShowAlertDialogFragment
-                                              (mNavigator.getActiveActivity(),
-                                               "Error",
-                                               "The selected content is no longer available",
-                                               null,
-                                               mAppContext.getString(R.string.ok),
-                                               new AlertDialogFragment.IAlertDialogListener() {
+                                } catch (Exception e) {
+                                    Log.e(TAG, e.getLocalizedMessage(), e);
+                                    AnalyticsHelper.trackLauncherRequest(contentId, null,
+                                            getSourceOfContentPlayRequest(activity.getIntent()));
+                                    AlertDialogFragment.createAndShowAlertDialogFragment
+                                            (mNavigator.getActiveActivity(),
+                                                    "Error",
+                                                    "The selected content is no longer available",
+                                                    null,
+                                                    mAppContext.getString(R.string.ok),
+                                                    new AlertDialogFragment.IAlertDialogListener() {
 
-                                                   @Override
-                                                   public void onDialogPositiveButton
-                                                           (AlertDialogFragment
-                                                                    alertDialogFragment) {
+                                                        @Override
+                                                        public void onDialogPositiveButton
+                                                                (AlertDialogFragment
+                                                                         alertDialogFragment) {
 
-                                                   }
+                                                        }
 
-                                                   @Override
-                                                   public void onDialogNegativeButton
-                                                           (AlertDialogFragment
-                                                                    alertDialogFragment) {
+                                                        @Override
+                                                        public void onDialogNegativeButton
+                                                                (AlertDialogFragment
+                                                                         alertDialogFragment) {
 
-                                                       alertDialogFragment.dismiss();
-                                                       if (cancellable != null &&
-                                                               cancellable.isLoadingCancelled()) {
-                                                           Log.d(TAG, "switchToHomeScreen after " +
-                                                                   "launcher integration " +
-                                                                   "exception cancelled");
-                                                           return;
-                                                       }
-                                                       switchToHomeScreen();
-                                                   }
-                                               });
-                                  }
-                              }
-                              else {
-                                  if (cancellable != null &&
-                                          cancellable.isLoadingCancelled()) {
-                                      Log.d(TAG, "switchToHomeScreen after Splash cancelled");
-                                      return;
-                                  }
+                                                            alertDialogFragment.dismiss();
+                                                            if (cancellable != null &&
+                                                                    cancellable.isLoadingCancelled()) {
+                                                                Log.d(TAG, "switchToHomeScreen after " +
+                                                                        "launcher integration " +
+                                                                        "exception cancelled");
+                                                                return;
+                                                            }
+                                                            switchToHomeScreen();
+                                                        }
+                                                    });
+                                }
+                            } else {
+                                if (cancellable != null &&
+                                        cancellable.isLoadingCancelled()) {
+                                    Log.d(TAG, "switchToHomeScreen after Splash cancelled");
+                                    return;
+                                }
 
-                                  // Send recommendations if authentication is not required, or if
-                                  // the user is logged in.
-                                  if (!Navigator.isScreenAccessVerificationRequired(
-                                          mNavigator.getNavigatorModel()) ||
-                                          Preferences.getBoolean(
-                                                  LauncherIntegrationManager
-                                                          .PREFERENCE_KEY_USER_AUTHENTICATED)) {
-                                      mRecommendationManager.cleanDatabase();
-                                      mRecommendationManager
-                                              .updateGlobalRecommendations(mAppContext);
-                                  }
-                                  if (shouldRestoreLastActivity(activity)) {
-                                      Log.d(TAG, "Ran global recipes from app launch. Will " +
-                                              "add intent extra to resume previous activity");
-                                      switchToHomeScreen(activity.getIntent());
-                                  }
-                                  else {
-                                      switchToHomeScreen();
-                                  }
-                              }
-                          });
+                                // Send recommendations if authentication is not required, or if
+                                // the user is logged in.
+                                if (!Navigator.isScreenAccessVerificationRequired(
+                                        mNavigator.getNavigatorModel()) ||
+                                        Preferences.getBoolean(
+                                                LauncherIntegrationManager
+                                                        .PREFERENCE_KEY_USER_AUTHENTICATED)) {
+                                    mRecommendationManager.cleanDatabase();
+                                    mRecommendationManager
+                                            .updateGlobalRecommendations(mAppContext);
+                                }
+                                if (shouldRestoreLastActivity(activity)) {
+                                    Log.d(TAG, "Ran global recipes from app launch. Will " +
+                                            "add intent extra to resume previous activity");
+                                    switchToHomeScreen(activity.getIntent());
+                                } else {
+                                    switchToHomeScreen();
+                                }
+                            }
+                        });
 
         mCompositeSubscription.add(subscription);
     }
@@ -2208,7 +2188,7 @@ public class ContentBrowser implements IContentBrowser, ICancellableLoad {
             boolean lessThan24Hours = true;
 
             long lastTimeMs = Preferences.getLong(com.amazon.android.ui.constants
-                                                          .PreferencesConstants.TIME_LAST_SAVED);
+                    .PreferencesConstants.TIME_LAST_SAVED);
             // Check if the app was last opened within the refresh period.
             if (lastTimeMs > 0) {
                 long currentTimeMs = DateAndTimeHelper.getCurrentDate().getTime();
@@ -2281,8 +2261,7 @@ public class ContentBrowser implements IContentBrowser, ICancellableLoad {
 
         if (mAuthHelper == null || mAuthHelper.getIAuthentication() == null) {
             return false;
-        }
-        else if (mAuthHelper.getIAuthentication().isAuthenticationCanBeDoneLater()) {
+        } else if (mAuthHelper.getIAuthentication().isAuthenticationCanBeDoneLater()) {
             return false;
         }
         return true;

@@ -111,6 +111,11 @@ public class Content implements Serializable {
     private String mFormat;
 
     /**
+     * Private information
+     */
+    private Integer mPriceDetail = null;
+
+    /**
      * Ad cue points.
      */
     private List<Integer> mAdCuePoints;
@@ -1025,4 +1030,11 @@ public class Content implements Serializable {
 
     }
 
+    public Integer getPrice() {
+        return mPriceDetail;
+    }
+
+    public void setPrice(Integer mPrice) {
+        this.mPriceDetail = mPrice;
+    }
 }
